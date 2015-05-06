@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              xmlns:tools="http://schemas.android.com/tools"
+              xmlns:app="http://schemas.android.com/apk/res-auto"
+              xmlns:card_view="http://schemas.android.com/apk/res-auto"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:orientation="vertical">
+    <android.support.v7.widget.Toolbar
+        android:id="@+id/toolbar"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:minHeight="?attr/actionBarSize"
+        android:background="?attr/colorPrimary"
+        app:navigationIcon="?attr/homeAsUpIndicator"/>
+
+    <RelativeLayout android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:background="@color/ultra_dark"
+                    tools:context=".ImageViewActivity">
+        <android.support.v7.widget.CardView
+            android:id="@+id/cv_image_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            card_view:cardCornerRadius="6dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp">
+            <com.joooonho.SelectableRoundedImageView
+                android:id="@+id/iv_user_pic"
+                android:src="@drawable/android"
+                android:scaleType="fitXY"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                app:sriv_left_top_corner_radius="6dip"
+                app:sriv_right_top_corner_radius="6dip"
+                app:sriv_left_bottom_corner_radius="6dip"
+                app:sriv_right_bottom_corner_radius="6dip"
+                app:sriv_border_width="0dip"
+                app:sriv_border_color="#008fea"
+                app:sriv_oval="false" />
+        </android.support.v7.widget.CardView>
+        <Button
+            android:id="@+id/btnUpdatePic"
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:text="@string/update_profile_picture"
+                android:background="@drawable/background_button_dark_rounded"
+                android:textAllCaps="true"
+                android:textColor="@android:color/white"
+                android:paddingTop="5dp"
+                android:paddingBottom="5dp"
+                android:paddingRight="14dp"
+                android:paddingLeft="14dp"
+                android:textSize="12sp"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="30dp"
+                android:layout_below="@+id/cv_image_container"/>
+    </RelativeLayout>
+</LinearLayout>
