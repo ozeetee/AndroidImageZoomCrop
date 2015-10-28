@@ -1,4 +1,4 @@
-package io.togoto.imagezoomcrop.imagecrop.photoview;
+package io.togoto.imagezoomcrop.photoview;
 
 import android.graphics.RectF;
 import android.view.GestureDetector;

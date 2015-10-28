@@ -1,4 +1,4 @@
-package io.togoto.imagezoomcrop.imagecrop.cropoverlay;
+package io.togoto.imagezoomcrop.cropoverlay;
 
 import android.content.Context;
 import android.content.res.TypedArray;
@@ -13,9 +13,9 @@ import android.util.TypedValue;
 import android.view.View;
 
 import io.togoto.imagezoomcrop.R;
-import io.togoto.imagezoomcrop.imagecrop.cropoverlay.edge.Edge;
-import io.togoto.imagezoomcrop.imagecrop.cropoverlay.utils.PaintUtil;
-import io.togoto.imagezoomcrop.imagecrop.photoview.PhotoViewAttacher;
+import io.togoto.imagezoomcrop.cropoverlay.edge.Edge;
+import io.togoto.imagezoomcrop.cropoverlay.utils.PaintUtil;
+import io.togoto.imagezoomcrop.photoview.PhotoViewAttacher;
 
 
 /**

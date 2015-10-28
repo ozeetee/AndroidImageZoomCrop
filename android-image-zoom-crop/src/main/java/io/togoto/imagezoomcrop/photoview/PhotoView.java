@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package io.togoto.imagezoomcrop.imagecrop.photoview;
+package io.togoto.imagezoomcrop.photoview;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -25,9 +25,9 @@ import android.util.AttributeSet;
 import android.view.GestureDetector;
 import android.widget.ImageView;
 
-import io.togoto.imagezoomcrop.imagecrop.photoview.PhotoViewAttacher.OnMatrixChangedListener;
-import io.togoto.imagezoomcrop.imagecrop.photoview.PhotoViewAttacher.OnPhotoTapListener;
-import io.togoto.imagezoomcrop.imagecrop.photoview.PhotoViewAttacher.OnViewTapListener;
+import io.togoto.imagezoomcrop.photoview.PhotoViewAttacher.OnMatrixChangedListener;
+import io.togoto.imagezoomcrop.photoview.PhotoViewAttacher.OnPhotoTapListener;
+import io.togoto.imagezoomcrop.photoview.PhotoViewAttacher.OnViewTapListener;
 
 public class PhotoView extends ImageView implements IPhotoView {
 

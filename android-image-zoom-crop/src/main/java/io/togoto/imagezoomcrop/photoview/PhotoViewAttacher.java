@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package io.togoto.imagezoomcrop.imagecrop.photoview;
+package io.togoto.imagezoomcrop.photoview;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -36,9 +36,9 @@ import android.widget.ImageView.ScaleType;
 
 import java.lang.ref.WeakReference;
 
-import io.togoto.imagezoomcrop.imagecrop.photoview.gestures.OnGestureListener;
-import io.togoto.imagezoomcrop.imagecrop.photoview.gestures.VersionedGestureDetector;
-import io.togoto.imagezoomcrop.imagecrop.photoview.scrollerproxy.ScrollerProxy;
+import io.togoto.imagezoomcrop.photoview.gestures.OnGestureListener;
+import io.togoto.imagezoomcrop.photoview.gestures.VersionedGestureDetector;
+import io.togoto.imagezoomcrop.photoview.scrollerproxy.ScrollerProxy;
 
 import static android.view.MotionEvent.ACTION_CANCEL;
 import static android.view.MotionEvent.ACTION_DOWN;
@@ -124,7 +124,7 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
 
     // Gesture Detectors
     private GestureDetector mGestureDetector;
-    private io.togoto.imagezoomcrop.imagecrop.photoview.gestures.GestureDetector mScaleDragDetector;
+    private io.togoto.imagezoomcrop.photoview.gestures.GestureDetector mScaleDragDetector;
 
     // These are set so we don't keep allocating them on the heap
     private final Matrix mBaseMatrix = new Matrix();

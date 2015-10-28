@@ -13,21 +13,16 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package io.togoto.imagezoomcrop.imagecrop.photoview.scrollerproxy;
+package io.togoto.imagezoomcrop.photoview.gestures;
 
-import android.annotation.TargetApi;
-import android.content.Context;
+import android.view.MotionEvent;
 
-@TargetApi(14)
-public class IcsScroller extends GingerScroller {
+public interface GestureDetector {
 
-    public IcsScroller(Context context) {
-        super(context);
-    }
+    boolean onTouchEvent(MotionEvent ev);
 
-    @Override
-    public boolean computeScrollOffset() {
-        return mScroller.computeScrollOffset();
-    }
+    boolean isScaling();
+
+    void setOnGestureListener(OnGestureListener listener);
 
 }

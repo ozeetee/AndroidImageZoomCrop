@@ -11,7 +11,7 @@
  * governing permissions and limitations under the License. 
  */
 
-package io.togoto.imagezoomcrop.imagecrop.cropoverlay.utils;
+package io.togoto.imagezoomcrop.cropoverlay.utils;
 
 import android.graphics.Bitmap;
 import android.graphics.Rect;

@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package io.togoto.imagezoomcrop.imagecrop.photoview.scrollerproxy;
+package io.togoto.imagezoomcrop.photoview.scrollerproxy;
 
 import android.annotation.TargetApi;
 import android.content.Context;

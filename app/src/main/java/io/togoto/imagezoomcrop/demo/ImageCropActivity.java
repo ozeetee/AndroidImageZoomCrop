@@ -32,11 +32,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import io.togoto.imagezoomcrop.imagecrop.cropoverlay.CropOverlayView;
-import io.togoto.imagezoomcrop.imagecrop.cropoverlay.edge.Edge;
-import io.togoto.imagezoomcrop.imagecrop.cropoverlay.utils.ImageViewUtil;
-import io.togoto.imagezoomcrop.imagecrop.photoview.PhotoView;
-import io.togoto.imagezoomcrop.imagecrop.photoview.PhotoViewAttacher;
+import io.togoto.imagezoomcrop.cropoverlay.CropOverlayView;
+import io.togoto.imagezoomcrop.cropoverlay.edge.Edge;
+import io.togoto.imagezoomcrop.cropoverlay.utils.ImageViewUtil;
+import io.togoto.imagezoomcrop.photoview.PhotoView;
+import io.togoto.imagezoomcrop.photoview.PhotoViewAttacher;
 
 /**
  * @author GT

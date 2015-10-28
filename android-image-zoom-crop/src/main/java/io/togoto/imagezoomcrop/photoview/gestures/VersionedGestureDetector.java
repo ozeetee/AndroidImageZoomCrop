@@ -1,4 +1,4 @@
-package io.togoto.imagezoomcrop.imagecrop.photoview.gestures;
+package io.togoto.imagezoomcrop.photoview.gestures;
 
 /*******************************************************************************
  * Copyright 2011, 2012 Chris Banes.

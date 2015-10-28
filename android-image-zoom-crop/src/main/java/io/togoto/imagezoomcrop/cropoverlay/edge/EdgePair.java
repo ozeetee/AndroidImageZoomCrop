@@ -11,7 +11,7 @@
  * governing permissions and limitations under the License. 
  */
 
-package io.togoto.imagezoomcrop.imagecrop.cropoverlay.edge;
+package io.togoto.imagezoomcrop.cropoverlay.edge;
 
 /**
  * Simple class to hold a pair of Edges.

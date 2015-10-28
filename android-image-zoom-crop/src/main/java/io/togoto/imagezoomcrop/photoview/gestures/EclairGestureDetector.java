@@ -13,13 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package io.togoto.imagezoomcrop.imagecrop.photoview.gestures;
+package io.togoto.imagezoomcrop.photoview.gestures;
 
 import android.annotation.TargetApi;
 import android.content.Context;
 import android.view.MotionEvent;
 
-import io.togoto.imagezoomcrop.imagecrop.photoview.Compat;
+import io.togoto.imagezoomcrop.photoview.Compat;
 
 @TargetApi(5)
 public class EclairGestureDetector extends CupcakeGestureDetector {

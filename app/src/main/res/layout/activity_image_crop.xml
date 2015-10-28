@@ -30,13 +30,13 @@
                     tools:context=".MainActivity"
                     android:background="@color/ultra_dark">
 
-        <io.togoto.imagezoomcrop.imagecrop.photoview.PhotoView
+        <io.togoto.imagezoomcrop.photoview.PhotoView
             android:id="@+id/iv_photo"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="center"/>
 
-        <io.togoto.imagezoomcrop.imagecrop.cropoverlay.CropOverlayView
+        <io.togoto.imagezoomcrop.cropoverlay.CropOverlayView
             android:id="@+id/crop_overlay"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"

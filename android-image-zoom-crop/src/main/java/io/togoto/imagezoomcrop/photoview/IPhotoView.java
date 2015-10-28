@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  *******************************************************************************/
-package io.togoto.imagezoomcrop.imagecrop.photoview;
+package io.togoto.imagezoomcrop.photoview;
 
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
