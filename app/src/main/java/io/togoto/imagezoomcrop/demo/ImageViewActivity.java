@@ -1,4 +1,4 @@
-package io.togoto.imagezoomcrop;
+package io.togoto.imagezoomcrop.demo;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
@@ -54,9 +54,9 @@ public class ImageViewActivity extends Activity implements PicModeSelectDialogFr
 
     @SuppressLint("InlinedApi")
     private void checkPermissions() {
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
                 != PackageManager.PERMISSION_GRANTED) {
-            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1234);
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.WRITE_EXTERNAL_STORAGE}, 1234);
         }
     }
 

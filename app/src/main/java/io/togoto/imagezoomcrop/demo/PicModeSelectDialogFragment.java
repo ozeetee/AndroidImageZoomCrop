@@ -1,4 +1,4 @@
-package io.togoto.imagezoomcrop;
+package io.togoto.imagezoomcrop.demo;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

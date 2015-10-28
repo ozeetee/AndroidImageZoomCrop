@@ -97,5 +97,6 @@
     <orderEntry type="library" exported="" name="selectableroundedimageview-1.0.1" level="project" />
     <orderEntry type="library" exported="" name="cardview-v7-23.1.0" level="project" />
     <orderEntry type="library" exported="" name="support-v4-23.1.0" level="project" />
+    <orderEntry type="module" module-name="android-image-zoom-crop" exported="" />
   </component>
 </module>
