@@ -197,6 +197,11 @@ public class PhotoView extends ImageView implements IPhotoView {
     }
 
     @Override
+    public float setMinimumScaleToFit(Drawable drawable) {
+        return mAttacher.setMinimumScaleToFit(drawable);
+    }
+
+    @Override
     public void setOnMatrixChangeListener(OnMatrixChangedListener listener) {
         mAttacher.setOnMatrixChangeListener(listener);
     }

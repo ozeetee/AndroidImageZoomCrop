@@ -51,7 +51,6 @@ public class ImageCropActivity extends Activity {
 
 
     private ContentResolver mContentResolver;
-    private float minScale = 1f;
 
     private final int IMAGE_MAX_SIZE = 1024;
     private final Bitmap.CompressFormat mOutputFormat = Bitmap.CompressFormat.JPEG;
@@ -122,25 +121,13 @@ public class ImageCropActivity extends Activity {
     }
 
     private void init() {
-        Bitmap b = getBitmap(mImageUri);
-        Drawable bitmap = new BitmapDrawable(getResources(), b);
-        int h = bitmap.getIntrinsicHeight();
-        int w = bitmap.getIntrinsicWidth();
-        final float cropWindowWidth = Edge.getWidth();
-        final float cropWindowHeight = Edge.getHeight();
-        if (h <= w) {
-            //Set the image view height to
-            //HACK : Have to add 1f.
-            minScale = (cropWindowHeight + 1f) / h;
-        } else if (w < h) {
-            //HACK : Have to add 1f.
-            minScale = (cropWindowWidth + 1f) / w;
-        }
+        Bitmap bitmap = getBitmap(mImageUri);
+        Drawable drawable = new BitmapDrawable(getResources(), bitmap);
 
+        float minScale = mImageView.setMinimumScaleToFit(drawable);
         mImageView.setMaximumScale(minScale * 3);
         mImageView.setMediumScale(minScale * 2);
-        mImageView.setMinimumScale(minScale);
-        mImageView.setImageDrawable(bitmap);
+        mImageView.setImageDrawable(drawable);
         mImageView.setScale(minScale);
 
         //Initialize the MoveResize text

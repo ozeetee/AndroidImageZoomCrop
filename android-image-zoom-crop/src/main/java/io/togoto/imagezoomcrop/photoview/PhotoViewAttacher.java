@@ -505,6 +505,26 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
     }
 
     @Override
+    public float setMinimumScaleToFit(Drawable drawable) {
+        float minScale = 1f;
+        int h = drawable.getIntrinsicHeight();
+        int w = drawable.getIntrinsicWidth();
+        final float cropWindowWidth = Edge.getWidth();
+        final float cropWindowHeight = Edge.getHeight();
+        if (h <= w) {
+            //Set the image view height to
+            //HACK : Have to add 1f.
+            minScale = (cropWindowHeight + 1f) / h;
+        } else if (w < h) {
+            //HACK : Have to add 1f.
+            minScale = (cropWindowWidth + 1f) / w;
+        }
+
+        setMinimumScale(minScale);
+        return minScale;
+    }
+
+    @Override
     @Deprecated
     public void setMidScale(float midScale) {
         setMediumScale(midScale);

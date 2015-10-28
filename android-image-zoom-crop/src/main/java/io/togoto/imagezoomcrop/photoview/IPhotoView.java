@@ -16,6 +16,7 @@ package io.togoto.imagezoomcrop.photoview;
 import android.graphics.Bitmap;
 import android.graphics.Matrix;
 import android.graphics.RectF;
+import android.graphics.drawable.Drawable;
 import android.view.GestureDetector;
 import android.view.View;
 import android.widget.ImageView;
@@ -129,10 +130,8 @@ public interface IPhotoView {
 
     /**
      * Use {@link #setMinimumScale(float minimumScale)} instead, this will be removed in future
-     * release
-     * <p>&nbsp;</p>
-     * Sets the minimum scale level. What this value represents depends on the current {@link
-     * android.widget.ImageView.ScaleType}.
+     * release <p>&nbsp;</p> Sets the minimum scale level. What this value represents depends on the
+     * current {@link android.widget.ImageView.ScaleType}.
      *
      * @param minScale minimum allowed scale
      */
@@ -148,11 +147,18 @@ public interface IPhotoView {
     void setMinimumScale(float minimumScale);
 
     /**
+     * Sets the minimum scale level so that the passed Drawable's shortest side fits exactly the
+     * bounds of the cropping view.
+     *
+     * @param drawable The Drawable to extract the sizes from
+     * @return The value of the set minimum scale
+     */
+    float setMinimumScaleToFit(Drawable drawable);
+
+    /**
      * Use {@link #setMediumScale(float mediumScale)} instead, this will be removed in future
-     * release
-     * <p>&nbsp;</p>
-     * Sets the middle scale level. What this value represents depends on the current {@link
-     * android.widget.ImageView.ScaleType}.
+     * release <p>&nbsp;</p> Sets the middle scale level. What this value represents depends on the
+     * current {@link android.widget.ImageView.ScaleType}.
      *
      * @param midScale medium scale preset
      */
@@ -168,10 +174,8 @@ public interface IPhotoView {
 
     /**
      * Use {@link #setMaximumScale(float maximumScale)} instead, this will be removed in future
-     * release
-     * <p>&nbsp;</p>
-     * Sets the maximum scale level. What this value represents depends on the current {@link
-     * android.widget.ImageView.ScaleType}.
+     * release <p>&nbsp;</p> Sets the maximum scale level. What this value represents depends on the
+     * current {@link android.widget.ImageView.ScaleType}.
      *
      * @param maxScale maximum allowed scale preset
      */
