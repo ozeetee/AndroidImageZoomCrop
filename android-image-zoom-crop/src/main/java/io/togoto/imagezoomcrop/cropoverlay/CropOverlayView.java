@@ -30,9 +30,9 @@ public class CropOverlayView extends View implements IGetImageBounds {
     private int DEFAULT_MIN_WIDTH = 500;
     private int DEFAULT_MAX_WIDTH = 700;
 
-    // we are croping square image so width and height will always be equal
+    // we are cropping square image so width and height will always be equal
     private int DEFAULT_CROPWIDTH = 600;
-    private static final float CORNER_RADIUS = 6;
+    private static final int DEFAULT_CORNER_RADIUS = 6;
 
 
     // The Paint used to darken the surrounding areas outside the crop area.
@@ -44,8 +44,10 @@ public class CropOverlayView extends View implements IGetImageBounds {
     // The Paint used to draw the guidelines within the crop area.
     private Paint mGuidelinePaint;
 
+    private Path mClipPath;
+
     // The bounding box around the Bitmap that we are cropping.
-    private Rect mBitmapRect;
+    private RectF mBitmapRect;
 
     private int cropHeight = DEFAULT_CROPWIDTH;
     private int cropWidth = DEFAULT_CROPWIDTH;
@@ -56,17 +58,18 @@ public class CropOverlayView extends View implements IGetImageBounds {
     private int mMarginSide;
     private int mMinWidth;
     private int mMaxWidth;
+    private int mCornerRadius;
     private Context mContext;
 
     public CropOverlayView(Context context) {
         super(context);
         init(context);
-        this.mContext = context;
+        mContext = context;
     }
 
     public CropOverlayView(Context context, AttributeSet attrs) {
         super(context, attrs);
-        this.mContext = context;
+        mContext = context;
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.CropOverlayView, 0, 0);
         try {
             mGuidelines = ta.getBoolean(R.styleable.CropOverlayView_guideLines, DEFAULT_GUIDELINES);
@@ -74,6 +77,9 @@ public class CropOverlayView extends View implements IGetImageBounds {
             mMarginSide = ta.getDimensionPixelSize(R.styleable.CropOverlayView_marginSide, DEFAULT_MARGINSIDE);
             mMinWidth = ta.getDimensionPixelSize(R.styleable.CropOverlayView_minWidth, DEFAULT_MIN_WIDTH);
             mMaxWidth = ta.getDimensionPixelSize(R.styleable.CropOverlayView_maxWidth, DEFAULT_MAX_WIDTH);
+            final float defaultRadius = TypedValue.applyDimension(
+                    TypedValue.COMPLEX_UNIT_DIP, DEFAULT_CORNER_RADIUS, mContext.getResources().getDisplayMetrics());
+            mCornerRadius = ta.getDimensionPixelSize(R.styleable.CropOverlayView_cornerRadius, (int) defaultRadius);
         } finally {
             ta.recycle();
         }
@@ -88,19 +94,19 @@ public class CropOverlayView extends View implements IGetImageBounds {
         //BUG FIX : Will have to do it here @ View level. Activity level not working on HTC ONE X
         //http://stackoverflow.com/questions/8895677/work-around-canvas-clippath-that-is-not-supported-in-android-any-more/8895894#8895894
         setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        final float radius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, CORNER_RADIUS, mContext.getResources().getDisplayMetrics());
 
         canvas.save();
-        RectF rectF = new RectF(Edge.LEFT.getCoordinate(),
-                Edge.TOP.getCoordinate(),
-                Edge.RIGHT.getCoordinate(),
-                Edge.BOTTOM.getCoordinate());
-        Path clipPath = new Path();
-        clipPath.addRoundRect(rectF, radius, radius, Path.Direction.CW);
-        canvas.clipPath(clipPath, Region.Op.DIFFERENCE);
+        mBitmapRect.left = Edge.LEFT.getCoordinate();
+        mBitmapRect.top = Edge.TOP.getCoordinate();
+        mBitmapRect.right = Edge.RIGHT.getCoordinate();
+        mBitmapRect.bottom = Edge.BOTTOM.getCoordinate();
+
+        mClipPath.addRoundRect(mBitmapRect, mCornerRadius, mCornerRadius, Path.Direction.CW);
+        canvas.clipPath(mClipPath, Region.Op.DIFFERENCE);
         canvas.drawARGB(204, 41, 48, 63);
+        mClipPath.reset();
         canvas.restore();
-        canvas.drawRoundRect(rectF, radius, radius, mBorderPaint);
+        canvas.drawRoundRect(mBitmapRect, mCornerRadius, mCornerRadius, mBorderPaint);
 
         //GT :  Drop shadow not working right now. Commenting the code now
 //        //Draw shadow
@@ -110,14 +116,18 @@ public class CropOverlayView extends View implements IGetImageBounds {
         drawRuleOfThirdsGuidelines(canvas);
     }
 
+    @Override
     public Rect getImageBounds() {
-        return new Rect((int) Edge.LEFT.getCoordinate(), (int) Edge.TOP.getCoordinate(), (int) Edge.RIGHT.getCoordinate(), (int) Edge.BOTTOM.getCoordinate());
+        return new Rect(
+                (int) Edge.LEFT.getCoordinate(), (int) Edge.TOP.getCoordinate(),
+                (int) Edge.RIGHT.getCoordinate(), (int) Edge.BOTTOM.getCoordinate());
     }
 
     // Private Methods /////////////////////////////////////////////////////////
     private void init(Context context) {
         int w = context.getResources().getDisplayMetrics().widthPixels;
         cropWidth = w - 2 * mMarginSide;
+        //noinspection SuspiciousNameCombination
         cropHeight = cropWidth;
         int edgeT = mMarginTop;
         int edgeB = mMarginTop + cropHeight;
@@ -130,8 +140,8 @@ public class CropOverlayView extends View implements IGetImageBounds {
         Edge.BOTTOM.setCoordinate(edgeB);
         Edge.LEFT.setCoordinate(edgeL);
         Edge.RIGHT.setCoordinate(edgeR);
-        new Rect(edgeL, edgeT, edgeR, edgeB);
-        mBitmapRect = new Rect(0, 0, w, w);
+        mBitmapRect = new RectF(edgeL, edgeT, edgeR, edgeB);
+        mClipPath = new Path();
     }
 
 
