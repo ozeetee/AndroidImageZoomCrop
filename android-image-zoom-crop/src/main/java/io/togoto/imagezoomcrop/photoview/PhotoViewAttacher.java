@@ -1,22 +1,21 @@
 /*******************************************************************************
  * Copyright 2011, 2012 Chris Banes.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
+ * <p/>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * <p/>
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  *******************************************************************************/
 package io.togoto.imagezoomcrop.photoview;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Matrix.ScaleToFit;
 import android.graphics.Rect;
@@ -36,6 +35,8 @@ import android.widget.ImageView.ScaleType;
 
 import java.lang.ref.WeakReference;
 
+import io.togoto.imagezoomcrop.cropoverlay.edge.Edge;
+import io.togoto.imagezoomcrop.cropoverlay.utils.ImageViewUtil;
 import io.togoto.imagezoomcrop.photoview.gestures.OnGestureListener;
 import io.togoto.imagezoomcrop.photoview.gestures.VersionedGestureDetector;
 import io.togoto.imagezoomcrop.photoview.scrollerproxy.ScrollerProxy;
@@ -44,7 +45,7 @@ import static android.view.MotionEvent.ACTION_CANCEL;
 import static android.view.MotionEvent.ACTION_DOWN;
 import static android.view.MotionEvent.ACTION_UP;
 
-public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
+class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
         OnGestureListener,
         ViewTreeObserver.OnGlobalLayoutListener {
 
@@ -380,7 +381,7 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
     }
 
     @Override
-    public void onFling(float startX, float startY, float velocityX,float velocityY) {
+    public void onFling(float startX, float startY, float velocityX, float velocityY) {
         if (DEBUG) {
             Log.d(LOG_TAG, "onFling. sX: " + startX + " sY: " + startY + " Vx: " + velocityX + " Vy: " + velocityY);
         }
@@ -587,7 +588,7 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
             }
 
             if (animate) {
-                imageView.post(new AnimatedZoomRunnable(getScale(), scale,focalX, focalY));
+                imageView.post(new AnimatedZoomRunnable(getScale(), scale, focalX, focalY));
             } else {
                 mSuppMatrix.setScale(scale, scale, focalX, focalY);
                 checkAndDisplayMatrix();
@@ -669,14 +670,6 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
                         "The ImageView's ScaleType has been changed since attaching a PhotoViewAttacher");
             }
         }
-    }
-
-    /**
-     * Used for calculating crop overlay
-     *
-     */
-    public interface IGetImageBounds {
-        Rect getImageBounds();
     }
 
     IGetImageBounds boundsListener;
@@ -809,6 +802,49 @@ public class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
     @Override
     public IPhotoView getIPhotoViewImplementation() {
         return this;
+    }
+
+    private Bitmap getCurrentDisplayedImage() {
+        // TODO do we need this? getVisibleRectangleBitmap() should be enough
+        ImageView imageView = getImageView();
+        Bitmap result = Bitmap.createBitmap(imageView.getWidth(), imageView.getHeight(), Bitmap.Config.RGB_565);
+        Canvas c = new Canvas(result);
+        imageView.draw(c);
+        return result;
+    }
+
+    @Override
+    public Bitmap getCroppedImage() {
+        Bitmap currentDisplayedBitmap = getCurrentDisplayedImage();
+        Rect displayedImageRect = ImageViewUtil.getBitmapRectCenterInside(currentDisplayedBitmap, getImageView());
+
+        // Get the scale factor between the actual Bitmap dimensions and the
+        // displayed dimensions for width.
+        float actualImageWidth = currentDisplayedBitmap.getWidth();
+        float displayedImageWidth = displayedImageRect.width();
+        float scaleFactorWidth = actualImageWidth / displayedImageWidth;
+
+        // Get the scale factor between the actual Bitmap dimensions and the
+        // displayed dimensions for height.
+        float actualImageHeight = currentDisplayedBitmap.getHeight();
+        float displayedImageHeight = displayedImageRect.height();
+        float scaleFactorHeight = actualImageHeight / displayedImageHeight;
+
+        // Get crop window position relative to the displayed image.
+        float cropWindowX = Edge.LEFT.getCoordinate() - displayedImageRect.left;
+        float cropWindowY = Edge.TOP.getCoordinate() - displayedImageRect.top;
+        float cropWindowWidth = Edge.getWidth();
+        float cropWindowHeight = Edge.getHeight();
+
+        // Scale the crop window position to the actual size of the Bitmap.
+        float actualCropX = cropWindowX * scaleFactorWidth;
+        float actualCropY = cropWindowY * scaleFactorHeight;
+        float actualCropWidth = cropWindowWidth * scaleFactorWidth;
+        float actualCropHeight = cropWindowHeight * scaleFactorHeight;
+
+        // Crop the subset from the original Bitmap.
+        return Bitmap.createBitmap(currentDisplayedBitmap,
+                (int) actualCropX, (int) actualCropY, (int) actualCropWidth, (int) actualCropHeight);
     }
 
     /**

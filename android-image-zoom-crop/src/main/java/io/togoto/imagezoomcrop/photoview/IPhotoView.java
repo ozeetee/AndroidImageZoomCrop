@@ -1,17 +1,15 @@
 /*******************************************************************************
  * Copyright 2011, 2012 Chris Banes.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
+ * <p/>
+ * Licensed under the Apache License, Version 2.0 (the "License"); you may not use this file except
+ * in compliance with the License. You may obtain a copy of the License at
+ * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
+ * <p/>
+ * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
+ * or implied. See the License for the specific language governing permissions and limitations under
+ * the License.
  *******************************************************************************/
 package io.togoto.imagezoomcrop.photoview;
 
@@ -323,12 +321,19 @@ public interface IPhotoView {
     IPhotoView getIPhotoViewImplementation();
 
     /**
+     * Returns the image cropped within the boundaries of the overlaying crop view.
+     *
+     * @return The generated cropped Bitmap
+     */
+    Bitmap getCroppedImage();
+
+    /**
      * Sets custom double tap listener, to intercept default given functions. To reset behavior to
      * default, you can just pass in "null" or public field of PhotoViewAttacher.defaultOnDoubleTapListener
      *
      * @param newOnDoubleTapListener custom OnDoubleTapListener to be set on ImageView
      */
-    public void setOnDoubleTapListener(GestureDetector.OnDoubleTapListener newOnDoubleTapListener);
+    void setOnDoubleTapListener(GestureDetector.OnDoubleTapListener newOnDoubleTapListener);
 
-    public void update();
+    void update();
 }

@@ -6,7 +6,6 @@ import android.content.ContentResolver;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
 import android.graphics.Matrix;
 import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
@@ -34,9 +33,8 @@ import java.io.OutputStream;
 
 import io.togoto.imagezoomcrop.cropoverlay.CropOverlayView;
 import io.togoto.imagezoomcrop.cropoverlay.edge.Edge;
-import io.togoto.imagezoomcrop.cropoverlay.utils.ImageViewUtil;
+import io.togoto.imagezoomcrop.photoview.IGetImageBounds;
 import io.togoto.imagezoomcrop.photoview.PhotoView;
-import io.togoto.imagezoomcrop.photoview.PhotoViewAttacher;
 
 /**
  * @author GT
@@ -79,7 +77,7 @@ public class ImageCropActivity extends Activity {
         setContentView(R.layout.activity_image_crop);
         mContentResolver = getContentResolver();
         mImageView = (PhotoView) findViewById(R.id.iv_photo);
-        mCropOverlayView = (CropOverlayView)findViewById(R.id.crop_overlay);
+        mCropOverlayView = (CropOverlayView) findViewById(R.id.crop_overlay);
         btnRetakePic = (Button) findViewById(R.id.btnRetakePic);
         btnFromGallery = (Button) findViewById(R.id.btnFromGallery);
         btnDone = (Button) findViewById(R.id.btn_done);
@@ -89,10 +87,10 @@ public class ImageCropActivity extends Activity {
         btnFromGallery.setOnClickListener(btnFromGalleryListener);
         btnDone.setOnClickListener(btnDoneListerner);
 
-        mImageView.addListener(new PhotoViewAttacher.IGetImageBounds() {
+        mImageView.addImageBoundsListener(new IGetImageBounds() {
             @Override
             public Rect getImageBounds() {
-                return new Rect((int) Edge.LEFT.getCoordinate(), (int) Edge.TOP.getCoordinate(), (int) Edge.RIGHT.getCoordinate(), (int) Edge.BOTTOM.getCoordinate());
+                return mCropOverlayView.getImageBounds();
             }
         });
 
@@ -168,7 +166,7 @@ public class ImageCropActivity extends Activity {
             setResult(RESULT_OK, intent);
             finish();
         } else {
-            Toast.makeText(this,"Unable to save Image into your device.",Toast.LENGTH_LONG).show();
+            Toast.makeText(this, "Unable to save Image into your device.", Toast.LENGTH_LONG).show();
         }
     }
 
@@ -212,7 +210,7 @@ public class ImageCropActivity extends Activity {
                 mImageCaptureUri = Uri.fromFile(mFileTemp);
             } else {
                 /*
-	        	 * The solution is taken from here: http://stackoverflow.com/questions/10042695/how-to-get-camera-result-as-a-uri-in-data-folder
+                 * The solution is taken from here: http://stackoverflow.com/questions/10042695/how-to-get-camera-result-as-a-uri-in-data-folder
 	        	 */
                 mImageCaptureUri = InternalStorageContentProvider.CONTENT_URI;
             }
@@ -220,7 +218,7 @@ public class ImageCropActivity extends Activity {
             takePictureIntent.putExtra("return-data", true);
             startActivityForResult(takePictureIntent, REQUEST_CODE_TAKE_PICTURE);
         } catch (ActivityNotFoundException e) {
-            Log.e(TAG,"Can't take picture",e);
+            Log.e(TAG, "Can't take picture", e);
             Toast.makeText(this, "Can't take picture", Toast.LENGTH_LONG).show();
         }
     }
@@ -352,47 +350,6 @@ public class ImageCropActivity extends Activity {
         return null;
     }
 
-    private Bitmap getCurrentDisplayedImage() {
-        Bitmap result = Bitmap.createBitmap(mImageView.getWidth(), mImageView.getHeight(), Bitmap.Config.RGB_565);
-        Canvas c = new Canvas(result);
-        mImageView.draw(c);
-        return result;
-    }
-
-    public Bitmap getCroppedImage() {
-
-        Bitmap mCurrentDisplayedBitmap = getCurrentDisplayedImage();
-        Rect displayedImageRect = ImageViewUtil.getBitmapRectCenterInside(mCurrentDisplayedBitmap, mImageView);
-
-        // Get the scale factor between the actual Bitmap dimensions and the
-        // displayed dimensions for width.
-        float actualImageWidth = mCurrentDisplayedBitmap.getWidth();
-        float displayedImageWidth = displayedImageRect.width();
-        float scaleFactorWidth = actualImageWidth / displayedImageWidth;
-
-        // Get the scale factor between the actual Bitmap dimensions and the
-        // displayed dimensions for height.
-        float actualImageHeight = mCurrentDisplayedBitmap.getHeight();
-        float displayedImageHeight = displayedImageRect.height();
-        float scaleFactorHeight = actualImageHeight / displayedImageHeight;
-
-        // Get crop window position relative to the displayed image.
-        float cropWindowX = Edge.LEFT.getCoordinate() - displayedImageRect.left;
-        float cropWindowY = Edge.TOP.getCoordinate() - displayedImageRect.top;
-        float cropWindowWidth = Edge.getWidth();
-        float cropWindowHeight = Edge.getHeight();
-
-        // Scale the crop window position to the actual size of the Bitmap.
-        float actualCropX = cropWindowX * scaleFactorWidth;
-        float actualCropY = cropWindowY * scaleFactorHeight;
-        float actualCropWidth = cropWindowWidth * scaleFactorWidth;
-        float actualCropHeight = cropWindowHeight * scaleFactorHeight;
-
-        // Crop the subset from the original Bitmap.
-        Bitmap croppedBitmap = Bitmap.createBitmap(mCurrentDisplayedBitmap, (int) actualCropX, (int) actualCropY, (int) actualCropWidth, (int) actualCropHeight);
-        return croppedBitmap;
-    }
-
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         return super.onCreateOptionsMenu(menu);
@@ -412,7 +369,7 @@ public class ImageCropActivity extends Activity {
 
 
     private boolean saveOutput() {
-        Bitmap croppedImage = getCroppedImage();
+        Bitmap croppedImage = mImageView.getCroppedImage();
         if (mSaveUri != null) {
             OutputStream outputStream = null;
             try {

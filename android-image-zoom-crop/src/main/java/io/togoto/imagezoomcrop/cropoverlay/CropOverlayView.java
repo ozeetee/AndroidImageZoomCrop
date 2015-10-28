@@ -15,15 +15,13 @@ import android.view.View;
 import io.togoto.imagezoomcrop.R;
 import io.togoto.imagezoomcrop.cropoverlay.edge.Edge;
 import io.togoto.imagezoomcrop.cropoverlay.utils.PaintUtil;
-import io.togoto.imagezoomcrop.photoview.PhotoViewAttacher;
+import io.togoto.imagezoomcrop.photoview.IGetImageBounds;
 
 
 /**
- * @author GT
- * Modified/stripped down Code from cropper library : https://github.com/edmodo/cropper
- *
+ * @author GT Modified/stripped down Code from cropper library : https://github.com/edmodo/cropper
  */
-public class CropOverlayView extends View implements PhotoViewAttacher.IGetImageBounds{
+public class CropOverlayView extends View implements IGetImageBounds {
 
     //Defaults
     private boolean DEFAULT_GUIDELINES = true;
@@ -71,11 +69,11 @@ public class CropOverlayView extends View implements PhotoViewAttacher.IGetImage
         this.mContext = context;
         TypedArray ta = context.obtainStyledAttributes(attrs, R.styleable.CropOverlayView, 0, 0);
         try {
-            mGuidelines = ta.getBoolean(R.styleable.CropOverlayView_guideLines,DEFAULT_GUIDELINES);
+            mGuidelines = ta.getBoolean(R.styleable.CropOverlayView_guideLines, DEFAULT_GUIDELINES);
             mMarginTop = ta.getDimensionPixelSize(R.styleable.CropOverlayView_marginTop, DEFAULT_MARGINTOP);
-            mMarginSide = ta.getDimensionPixelSize(R.styleable.CropOverlayView_marginSide,DEFAULT_MARGINSIDE);
-            mMinWidth = ta.getDimensionPixelSize(R.styleable.CropOverlayView_minWidth,DEFAULT_MIN_WIDTH);
-            mMaxWidth = ta.getDimensionPixelSize(R.styleable.CropOverlayView_maxWidth,DEFAULT_MAX_WIDTH);
+            mMarginSide = ta.getDimensionPixelSize(R.styleable.CropOverlayView_marginSide, DEFAULT_MARGINSIDE);
+            mMinWidth = ta.getDimensionPixelSize(R.styleable.CropOverlayView_minWidth, DEFAULT_MIN_WIDTH);
+            mMaxWidth = ta.getDimensionPixelSize(R.styleable.CropOverlayView_maxWidth, DEFAULT_MAX_WIDTH);
         } finally {
             ta.recycle();
         }
@@ -98,11 +96,11 @@ public class CropOverlayView extends View implements PhotoViewAttacher.IGetImage
                 Edge.RIGHT.getCoordinate(),
                 Edge.BOTTOM.getCoordinate());
         Path clipPath = new Path();
-        clipPath.addRoundRect(rectF,radius,radius, Path.Direction.CW);
+        clipPath.addRoundRect(rectF, radius, radius, Path.Direction.CW);
         canvas.clipPath(clipPath, Region.Op.DIFFERENCE);
         canvas.drawARGB(204, 41, 48, 63);
         canvas.restore();
-        canvas.drawRoundRect(rectF,radius,radius,mBorderPaint);
+        canvas.drawRoundRect(rectF, radius, radius, mBorderPaint);
 
         //GT :  Drop shadow not working right now. Commenting the code now
 //        //Draw shadow
@@ -112,13 +110,12 @@ public class CropOverlayView extends View implements PhotoViewAttacher.IGetImage
         drawRuleOfThirdsGuidelines(canvas);
     }
 
-    public Rect getImageBounds(){
+    public Rect getImageBounds() {
         return new Rect((int) Edge.LEFT.getCoordinate(), (int) Edge.TOP.getCoordinate(), (int) Edge.RIGHT.getCoordinate(), (int) Edge.BOTTOM.getCoordinate());
     }
-    
 
     // Private Methods /////////////////////////////////////////////////////////
-    private void init(Context context){
+    private void init(Context context) {
         int w = context.getResources().getDisplayMetrics().widthPixels;
         cropWidth = w - 2 * mMarginSide;
         cropHeight = cropWidth;
@@ -134,7 +131,7 @@ public class CropOverlayView extends View implements PhotoViewAttacher.IGetImage
         Edge.LEFT.setCoordinate(edgeL);
         Edge.RIGHT.setCoordinate(edgeR);
         new Rect(edgeL, edgeT, edgeR, edgeB);
-        mBitmapRect = new Rect(0,0,w,w);
+        mBitmapRect = new Rect(0, 0, w, w);
     }
 
 
