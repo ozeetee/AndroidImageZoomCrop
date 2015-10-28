@@ -1,10 +1,15 @@
 package io.togoto.imagezoomcrop;
 
+import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.util.DisplayMetrics;
 import android.view.MenuItem;
@@ -18,7 +23,7 @@ import android.widget.Toast;
 /**
  * @author GT
  */
-public class ImageViewActivity extends Activity implements PicModeSelectDialogFragment.IPicModeSelectListener{
+public class ImageViewActivity extends Activity implements PicModeSelectDialogFragment.IPicModeSelectListener {
 
     public static final String TAG = "ImageViewActivity";
     public static final String TEMP_PHOTO_FILE_NAME = "temp_photo.jpg";
@@ -43,26 +48,35 @@ public class ImageViewActivity extends Activity implements PicModeSelectDialogFr
                 showAddProfilePicDialog();
             }
         });
+
+        checkPermissions();
     }
 
+    @SuppressLint("InlinedApi")
+    private void checkPermissions() {
+        if (ContextCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(this, new String[]{Manifest.permission.READ_EXTERNAL_STORAGE}, 1234);
+        }
+    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent result) {
-        if(requestCode == REQUEST_CODE_UPDATE_PIC){
-            if(resultCode == RESULT_OK){
+        if (requestCode == REQUEST_CODE_UPDATE_PIC) {
+            if (resultCode == RESULT_OK) {
                 String imagePath = result.getStringExtra(GOTOConstants.IntentExtras.IMAGE_PATH);
                 showCroppedImage(imagePath);
-            }else if(resultCode == RESULT_CANCELED){
+            } else if (resultCode == RESULT_CANCELED) {
                 //TODO : Handle case
-            }else{
+            } else {
                 String errorMsg = result.getStringExtra(ImageCropActivity.ERROR_MSG);
-                Toast.makeText(this,errorMsg,Toast.LENGTH_LONG).show();
+                Toast.makeText(this, errorMsg, Toast.LENGTH_LONG).show();
             }
         }
     }
 
     private void showCroppedImage(String mImagePath) {
-        if(mImagePath != null){
+        if (mImagePath != null) {
             Bitmap myBitmap = BitmapFactory.decodeFile(mImagePath);
             mImageView.setImageBitmap(myBitmap);
         }
@@ -81,7 +95,7 @@ public class ImageViewActivity extends Activity implements PicModeSelectDialogFr
 
     //--------Private methods --------
 
-    private void initCardView(){
+    private void initCardView() {
         mCardView.setPreventCornerOverlap(false);
         DisplayMetrics displayMetrics = getApplicationContext().getResources().getDisplayMetrics();
         //We are implementing this only for portrait mode so width will be always less
@@ -97,15 +111,15 @@ public class ImageViewActivity extends Activity implements PicModeSelectDialogFr
     }
 
 
-    private void showAddProfilePicDialog(){
+    private void showAddProfilePicDialog() {
         PicModeSelectDialogFragment dialogFragment = new PicModeSelectDialogFragment();
         dialogFragment.setiPicModeSelectListener(this);
         dialogFragment.show(getFragmentManager(), "picModeSelector");
     }
 
-    private void actionProfilePic(String action){
-        Intent intent = new Intent(this,ImageCropActivity.class);
-        intent.putExtra("ACTION",action);
+    private void actionProfilePic(String action) {
+        Intent intent = new Intent(this, ImageCropActivity.class);
+        intent.putExtra("ACTION", action);
         startActivityForResult(intent, REQUEST_CODE_UPDATE_PIC);
     }
 

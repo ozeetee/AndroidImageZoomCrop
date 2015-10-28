@@ -16,7 +16,6 @@
 package io.togoto.imagezoomcrop.imagecrop.photoview.gestures;
 
 import android.content.Context;
-import android.util.FloatMath;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -83,7 +82,7 @@ public class CupcakeGestureDetector implements GestureDetector {
                 if (!mIsDragging) {
                     // Use Pythagoras to see if drag length is larger than
                     // touch slop
-                    mIsDragging = FloatMath.sqrt((dx * dx) + (dy * dy)) >= mTouchSlop;
+                    mIsDragging = Math.sqrt((dx * dx) + (dy * dy)) >= mTouchSlop;
                 }
 
                 if (mIsDragging) {

@@ -92,6 +92,7 @@ public class CropOverlayView extends View implements PhotoViewAttacher.IGetImage
         setLayerType(View.LAYER_TYPE_SOFTWARE, null);
         final float radius = TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, CORNER_RADIUS, mContext.getResources().getDisplayMetrics());
 
+        canvas.save();
         RectF rectF = new RectF(Edge.LEFT.getCoordinate(),
                 Edge.TOP.getCoordinate(),
                 Edge.RIGHT.getCoordinate(),
