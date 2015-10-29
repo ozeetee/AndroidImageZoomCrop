@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import java.io.Closeable;
@@ -48,7 +49,8 @@ public class ImageCropActivity extends Activity {
     Button btnFromGallery;
     Button btnDone;
     View mMoveResizeText;
-
+    SeekBar mRotationBar;
+    Button mBtnUndoRotation;
 
     private ContentResolver mContentResolver;
 
@@ -81,10 +83,13 @@ public class ImageCropActivity extends Activity {
         btnFromGallery = (Button) findViewById(R.id.btnFromGallery);
         btnDone = (Button) findViewById(R.id.btn_done);
         mMoveResizeText = findViewById(R.id.tv_move_resize_txt);
+        mRotationBar = (SeekBar) findViewById(R.id.bar_rotation);
+        mBtnUndoRotation = (Button) findViewById(R.id.btn_undo);
 
         btnRetakePic.setOnClickListener(btnRetakeListener);
         btnFromGallery.setOnClickListener(btnFromGalleryListener);
         btnDone.setOnClickListener(btnDoneListerner);
+        mBtnUndoRotation.setOnClickListener(btnUndoRotationListener);
 
         mImageView.addImageBoundsListener(new IGetImageBounds() {
             @Override
@@ -130,6 +135,33 @@ public class ImageCropActivity extends Activity {
         mImageView.setImageDrawable(drawable);
         mImageView.setScale(minScale);
 
+        // initialize rotation seek bar
+        mRotationBar.setMax(3600);
+        mRotationBar.setProgress(1800);
+        mRotationBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+
+            private int mPreviousProgress = 1800;
+
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                if (fromUser) {
+                    int delta = progress - mPreviousProgress;
+                    mImageView.setRotationBy((float) delta / 10, false);
+                }
+                mPreviousProgress = progress;
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+
         //Initialize the MoveResize text
         RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mMoveResizeText.getLayoutParams();
         lp.setMargins(0, Math.round(Edge.BOTTOM.getCoordinate()) + 20, 0, 0);
@@ -164,6 +196,14 @@ public class ImageCropActivity extends Activity {
                 createTempFile();
             }
             takePic();
+        }
+    };
+
+    private View.OnClickListener btnUndoRotationListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            mImageView.setRotationBy(0, true);
+            mRotationBar.setProgress(1800);
         }
     };
 

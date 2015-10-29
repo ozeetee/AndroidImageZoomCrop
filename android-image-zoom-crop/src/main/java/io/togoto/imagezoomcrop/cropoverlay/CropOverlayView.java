@@ -113,7 +113,9 @@ public class CropOverlayView extends View implements IGetImageBounds {
 //        Paint paint = new Paint(Paint.ANTI_ALIAS_FLAG);
 //        paint.setShadowLayer(12, 0, 0, Color.YELLOW);
 //        paint.setAlpha(0);
-        drawRuleOfThirdsGuidelines(canvas);
+        if (mGuidelines) {
+            drawRuleOfThirdsGuidelines(canvas);
+        }
     }
 
     @Override

@@ -146,6 +146,7 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
 
     private boolean mZoomEnabled;
     private ScaleType mScaleType = ScaleType.FIT_CENTER;
+    private float mRotation;
 
     public PhotoViewAttacher(ImageView imageView) {
         mImageView = new WeakReference<ImageView>(imageView);
@@ -267,20 +268,41 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
      */
     @Override
     public void setPhotoViewRotation(float degrees) {
-        mSuppMatrix.setRotate(degrees % 360);
-        checkAndDisplayMatrix();
+        setRotationTo(degrees);
     }
 
     @Override
     public void setRotationTo(float degrees) {
-        mSuppMatrix.setRotate(degrees % 360);
+        Rect imageBounds = getImageBounds();
+        mSuppMatrix.setRotate(degrees % 360, imageBounds.centerX(), imageBounds.centerY());
         checkAndDisplayMatrix();
     }
 
     @Override
-    public void setRotationBy(float degrees) {
-        mSuppMatrix.postRotate(degrees % 360);
-        checkAndDisplayMatrix();
+    public void setRotationBy(float rotationDegree) {
+        setRotationBy(rotationDegree, false);
+    }
+
+    @Override
+    public void setRotationBy(float degrees, boolean animate) {
+        final Rect imageBounds = getImageBounds();
+        final int centerX = imageBounds.centerX();
+        final int centerY = imageBounds.centerY();
+
+        final float oldRotation = mRotation;
+        final float degreesNorm = degrees % 360;
+        if (degreesNorm == 0) { // reset matrix and rotation
+            mRotation = 0;
+        } else {
+            mRotation = (mRotation + degreesNorm) % 360;
+        }
+
+        if (animate) {
+            getImageView().post(new AnimatedRotateRunnable(oldRotation, degreesNorm, centerX, centerY));
+        } else {
+            mSuppMatrix.postRotate(degreesNorm, centerX, centerY);
+            checkAndDisplayMatrix();
+        }
     }
 
     public ImageView getImageView() {
@@ -636,6 +658,7 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
     public void update() {
         ImageView imageView = getImageView();
         if (null != imageView) {
+
             if (mZoomEnabled) {
 
                 // Make sure we using MATRIX Scale Type
@@ -700,7 +723,7 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
 
     public Rect getImageBounds() {
         if (getImageView() == null) {
-            return null;
+            return new Rect();
         } else if (boundsListener != null) {
             return boundsListener.getImageBounds();
         } else {
@@ -883,6 +906,7 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
      * Resets the Matrix back to FIT_CENTER, and then displays it.s
      */
     private void resetMatrix() {
+        mRotation = 0;
         mSuppMatrix.reset();
         setImageViewMatrix(getDrawMatrix());
         checkMatrixBounds();
@@ -1065,6 +1089,52 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
             float deltaScale = scale / getScale();
 
             mSuppMatrix.postScale(deltaScale, deltaScale, mFocalX, mFocalY);
+            checkAndDisplayMatrix();
+
+            // We haven't hit our target scale yet, so post ourselves again
+            if (t < 1f) {
+                Compat.postOnAnimation(imageView, this);
+            }
+        }
+
+        private float interpolate() {
+            float t = 1f * (System.currentTimeMillis() - mStartTime) / ZOOM_DURATION;
+            t = Math.min(1f, t);
+            t = sInterpolator.getInterpolation(t);
+            return t;
+        }
+    }
+
+    private class AnimatedRotateRunnable implements Runnable {
+
+        private final float mFocalX, mFocalY;
+        private final long mStartTime;
+        private final float mRotationStart, mRotationEnd;
+
+        private float mRotationProgress;
+
+        public AnimatedRotateRunnable(final float currentRotation, final float targetRotation,
+                                      final float focalX, final float focalY) {
+            mStartTime = System.currentTimeMillis();
+            mRotationStart = currentRotation;
+            mRotationEnd = targetRotation;
+            mFocalX = focalX;
+            mFocalY = focalY;
+        }
+
+        @Override
+        public void run() {
+            ImageView imageView = getImageView();
+            if (imageView == null) {
+                return;
+            }
+
+            final float t = interpolate();
+            final float totalRotation = (mRotationEnd - mRotationStart) * t;
+            final float rotationDelta = totalRotation - mRotationProgress;
+            mRotationProgress = totalRotation;
+
+            mSuppMatrix.postRotate(rotationDelta, mFocalX, mFocalY);
             checkAndDisplayMatrix();
 
             // We haven't hit our target scale yet, so post ourselves again

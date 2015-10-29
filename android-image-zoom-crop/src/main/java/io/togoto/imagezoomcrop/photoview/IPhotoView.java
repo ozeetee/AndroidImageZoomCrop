@@ -236,11 +236,19 @@ public interface IPhotoView {
     void setRotationTo(float rotationDegree);
 
     /**
-     * Enables rotation via PhotoView internal functions.
+     * Enables rotation with no animation via PhotoView internal functions.
      *
      * @param rotationDegree - Degree to rotate PhotoView by, should be in range 0 to 360
      */
     void setRotationBy(float rotationDegree);
+
+    /**
+     * Enables rotation via PhotoView internal functions.
+     *
+     * @param rotationDegree - Degree to rotate PhotoView by, should be in range 0 to 360
+     * @param animate        true to animate the rotation
+     */
+    void setRotationBy(float rotationDegree, boolean animate);
 
     /**
      * Returns a callback listener to be invoked when the View is tapped with a single tap.
