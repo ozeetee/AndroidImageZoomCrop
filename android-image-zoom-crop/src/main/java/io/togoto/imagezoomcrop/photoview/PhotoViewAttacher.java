@@ -111,7 +111,7 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
      */
     private static void setImageViewScaleTypeMatrix(ImageView imageView) {
         /**
-         * PhotoView sets it's own ScaleType to Matrix, then diverts all calls
+         * PhotoView sets its own ScaleType to Matrix, then diverts all calls
          * setScaleType to this.setScaleType automatically.
          */
         if (null != imageView && !(imageView instanceof IPhotoView)) {
@@ -149,7 +149,7 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
     private float mRotation;
 
     public PhotoViewAttacher(ImageView imageView) {
-        mImageView = new WeakReference<ImageView>(imageView);
+        mImageView = new WeakReference<>(imageView);
 
         imageView.setDrawingCacheEnabled(true);
         imageView.setOnTouchListener(this);
@@ -164,8 +164,7 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
             return;
         }
         // Create Gesture Detectors...
-        mScaleDragDetector = VersionedGestureDetector.newInstance(
-                imageView.getContext(), this);
+        mScaleDragDetector = VersionedGestureDetector.newInstance(imageView.getContext(), this);
 
         mGestureDetector = new GestureDetector(imageView.getContext(),
                 new GestureDetector.SimpleOnGestureListener() {
@@ -188,9 +187,9 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
     @Override
     public void setOnDoubleTapListener(GestureDetector.OnDoubleTapListener newOnDoubleTapListener) {
         if (newOnDoubleTapListener != null)
-            this.mGestureDetector.setOnDoubleTapListener(newOnDoubleTapListener);
+            mGestureDetector.setOnDoubleTapListener(newOnDoubleTapListener);
         else
-            this.mGestureDetector.setOnDoubleTapListener(new DefaultOnDoubleTapListener(this));
+            mGestureDetector.setOnDoubleTapListener(new DefaultOnDoubleTapListener(this));
     }
 
     @Override
@@ -199,8 +198,8 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
     }
 
     /**
-     * Clean-up the resources attached to this object. This needs to be called when the ImageView is
-     * no longer used. A good example is from {@link android.view.View#onDetachedFromWindow()} or
+     * Clean-up the resources attached to this object. This needs to be called when the ImageView
+     * is no longer used. A good example is from {@link android.view.View#onDetachedFromWindow()} or
      * from {@link android.app.Activity#onDestroy()}.
      */
     @SuppressWarnings("deprecation")
@@ -670,7 +669,13 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
                 // Reset the Matrix...
                 resetMatrix();
             }
+            setScale(getMinimumScale());
         }
+    }
+
+    @Override
+    public void reset() {
+        update();
     }
 
     @Override
@@ -832,7 +837,16 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
 
     public Bitmap getVisibleRectangleBitmap() {
         ImageView imageView = getImageView();
-        return imageView == null ? null : imageView.getDrawingCache();
+        if (imageView == null) {
+            return null;
+        }
+        Bitmap visibleBitmap = imageView.getDrawingCache();
+        if (visibleBitmap == null) {
+            visibleBitmap = Bitmap.createBitmap(imageView.getWidth(), imageView.getHeight(), Bitmap.Config.RGB_565);
+            Canvas c = new Canvas(visibleBitmap);
+            imageView.draw(c);
+        }
+        return visibleBitmap;
     }
 
     @Override
@@ -847,29 +861,20 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
         return this;
     }
 
-    private Bitmap getCurrentDisplayedImage() {
-        // TODO do we need this? getVisibleRectangleBitmap() should be enough
-        ImageView imageView = getImageView();
-        Bitmap result = Bitmap.createBitmap(imageView.getWidth(), imageView.getHeight(), Bitmap.Config.RGB_565);
-        Canvas c = new Canvas(result);
-        imageView.draw(c);
-        return result;
-    }
-
     @Override
     public Bitmap getCroppedImage() {
-        Bitmap currentDisplayedBitmap = getCurrentDisplayedImage();
-        Rect displayedImageRect = ImageViewUtil.getBitmapRectCenterInside(currentDisplayedBitmap, getImageView());
+        Bitmap visibleBitmap = getVisibleRectangleBitmap();
+        Rect displayedImageRect = ImageViewUtil.getBitmapRectCenterInside(visibleBitmap, getImageView());
 
         // Get the scale factor between the actual Bitmap dimensions and the
         // displayed dimensions for width.
-        float actualImageWidth = currentDisplayedBitmap.getWidth();
+        float actualImageWidth = visibleBitmap.getWidth();
         float displayedImageWidth = displayedImageRect.width();
         float scaleFactorWidth = actualImageWidth / displayedImageWidth;
 
         // Get the scale factor between the actual Bitmap dimensions and the
         // displayed dimensions for height.
-        float actualImageHeight = currentDisplayedBitmap.getHeight();
+        float actualImageHeight = visibleBitmap.getHeight();
         float displayedImageHeight = displayedImageRect.height();
         float scaleFactorHeight = actualImageHeight / displayedImageHeight;
 
@@ -886,7 +891,7 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
         float actualCropHeight = cropWindowHeight * scaleFactorHeight;
 
         // Crop the subset from the original Bitmap.
-        return Bitmap.createBitmap(currentDisplayedBitmap,
+        return Bitmap.createBitmap(visibleBitmap,
                 (int) actualCropX, (int) actualCropY, (int) actualCropWidth, (int) actualCropHeight);
     }
 
@@ -903,7 +908,7 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
     }
 
     /**
-     * Resets the Matrix back to FIT_CENTER, and then displays it.s
+     * Resets the Matrix back to FIT_CENTER, and then displays it.
      */
     private void resetMatrix() {
         mRotation = 0;
@@ -1012,7 +1017,7 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
      *
      * @author Chris Banes
      */
-    public static interface OnMatrixChangedListener {
+    public interface OnMatrixChangedListener {
         /**
          * Callback for when the Matrix displaying the Drawable has changed. This could be because
          * the View's bounds have changed, or the user has zoomed.
@@ -1028,10 +1033,11 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
      *
      * @author Chris Banes
      */
-    public static interface OnPhotoTapListener {
+    public interface OnPhotoTapListener {
 
         /**
-         * A callback to receive where the user taps on a photo. You will only receive a callback if
+         * A callback to receive where the user taps on a photo. You will only receive a callback
+         * if
          * the user taps on the actual photo, tapping on 'whitespace' will be ignored.
          *
          * @param view - View the user tapped.
@@ -1049,7 +1055,7 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
      *
      * @author Chris Banes
      */
-    public static interface OnViewTapListener {
+    public interface OnViewTapListener {
 
         /**
          * A callback to receive where the user taps on a ImageView. You will receive a callback if
@@ -1232,4 +1238,5 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
             }
         }
     }
+
 }

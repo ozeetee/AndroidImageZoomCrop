@@ -18,7 +18,7 @@ import android.widget.SeekBar;
  *
  * @author marcosalis
  */
-public final class RotationSeekBar extends SeekBar {
+public class RotationSeekBar extends SeekBar {
 
     // degree values are multiplied by 10 to improve smoothness
     private static final int DEFAULT_MAX = 3600;
@@ -59,6 +59,10 @@ public final class RotationSeekBar extends SeekBar {
 
     public float getRotationProgress() {
         return fromProgressToDegrees(getProgress());
+    }
+
+    public void reset() {
+        init();
     }
 
     private static float fromProgressToDegrees(int progress) {

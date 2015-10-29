@@ -6,9 +6,11 @@
  * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
  * <p/>
- * Unless required by applicable law or agreed to in writing, software distributed under the License
+ * Unless required by applicable law or agreed to in writing, software distributed under the
+ * License
  * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
+ * or implied. See the License for the specific language governing permissions and limitations
+ * under
  * the License.
  *******************************************************************************/
 package io.togoto.imagezoomcrop.photoview;
@@ -180,25 +182,30 @@ public class PhotoView extends ImageView implements IPhotoView {
     // setImageBitmap calls through to this method
     public void setImageDrawable(Drawable drawable) {
         super.setImageDrawable(drawable);
-        if (null != mAttacher) {
-            mAttacher.update();
-        }
+        postUpdate();
     }
 
     @Override
     public void setImageResource(int resId) {
         super.setImageResource(resId);
-        if (null != mAttacher) {
-            mAttacher.update();
-        }
+        postUpdate();
     }
 
     @Override
     public void setImageURI(Uri uri) {
         super.setImageURI(uri);
-        if (null != mAttacher) {
-            mAttacher.update();
-        }
+        postUpdate();
+    }
+
+    private void postUpdate() {
+        post(new Runnable() { // need time to layout
+            @Override
+            public void run() {
+                if (null != mAttacher) {
+                    mAttacher.update();
+                }
+            }
+        });
     }
 
     @Override
@@ -293,6 +300,11 @@ public class PhotoView extends ImageView implements IPhotoView {
     @Override
     public void update() {
         mAttacher.update();
+    }
+
+    @Override
+    public void reset() {
+        mAttacher.reset();
     }
 
     @Override

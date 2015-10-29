@@ -44,11 +44,13 @@ import io.togoto.imagezoomcrop.photoview.RotationSeekBar;
 public class ImageCropActivity extends Activity {
 
     public static final String TAG = "ImageCropActivity";
+
     PhotoView mImageView;
     CropOverlayView mCropOverlayView;
     Button btnRetakePic;
     Button btnFromGallery;
     Button btnDone;
+    Button mBtnReset;
     View mMoveResizeText;
     RotationSeekBar mRotationBar;
     Button mBtnUndoRotation;
@@ -83,6 +85,7 @@ public class ImageCropActivity extends Activity {
         btnRetakePic = (Button) findViewById(R.id.btnRetakePic);
         btnFromGallery = (Button) findViewById(R.id.btnFromGallery);
         btnDone = (Button) findViewById(R.id.btn_done);
+        mBtnReset = (Button) findViewById(R.id.btn_reset);
         mMoveResizeText = findViewById(R.id.tv_move_resize_txt);
         mRotationBar = (RotationSeekBar) findViewById(R.id.bar_rotation);
         mBtnUndoRotation = (Button) findViewById(R.id.btn_undo);
@@ -90,6 +93,7 @@ public class ImageCropActivity extends Activity {
         btnRetakePic.setOnClickListener(btnRetakeListener);
         btnFromGallery.setOnClickListener(btnFromGalleryListener);
         btnDone.setOnClickListener(btnDoneListerner);
+        mBtnReset.setOnClickListener(btnResetListerner);
         mBtnUndoRotation.setOnClickListener(btnUndoRotationListener);
 
         mImageView.addImageBoundsListener(new IGetImageBounds() {
@@ -98,6 +102,17 @@ public class ImageCropActivity extends Activity {
                 return mCropOverlayView.getImageBounds();
             }
         });
+
+        // initialize rotation seek bar
+        mRotationBar.setOnSeekBarChangeListener(new RotationSeekBar.OnRotationSeekBarChangeListener(mRotationBar) {
+            @Override
+            public void onRotationProgressChanged(@NonNull RotationSeekBar seekBar, float delta, boolean fromUser) {
+                if (fromUser) {
+                    mImageView.setRotationBy(delta, false);
+                }
+            }
+        });
+
 
         createTempFile();
         if (savedInstanceState == null || !savedInstanceState.getBoolean("restoreState")) {
@@ -133,24 +148,13 @@ public class ImageCropActivity extends Activity {
         float minScale = mImageView.setMinimumScaleToFit(drawable);
         mImageView.setMaximumScale(minScale * 3);
         mImageView.setMediumScale(minScale * 2);
-        mImageView.setImageDrawable(drawable);
         mImageView.setScale(minScale);
-
-        // initialize rotation seek bar
-        mRotationBar.setOnSeekBarChangeListener(new RotationSeekBar.OnRotationSeekBarChangeListener(mRotationBar) {
-            @Override
-            public void onRotationProgressChanged(@NonNull RotationSeekBar seekBar, float delta, boolean fromUser) {
-                if (fromUser) {
-                    mImageView.setRotationBy(delta, false);
-                }
-            }
-        });
+        mImageView.setImageDrawable(drawable);
 
         //Initialize the MoveResize text
         RelativeLayout.LayoutParams lp = (RelativeLayout.LayoutParams) mMoveResizeText.getLayoutParams();
         lp.setMargins(0, Math.round(Edge.BOTTOM.getCoordinate()) + 20, 0, 0);
         mMoveResizeText.setLayoutParams(lp);
-
     }
 
     private View.OnClickListener btnDoneListerner = new View.OnClickListener() {
@@ -173,6 +177,15 @@ public class ImageCropActivity extends Activity {
         }
     }
 
+    private View.OnClickListener btnResetListerner = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            mRotationBar.reset();
+            // init();
+            mImageView.reset();
+        }
+    };
+
     private View.OnClickListener btnRetakeListener = new View.OnClickListener() {
         @Override
         public void onClick(View v) {
@@ -187,7 +200,7 @@ public class ImageCropActivity extends Activity {
         @Override
         public void onClick(View v) {
             mImageView.setRotationBy(0, true);
-            mRotationBar.setRotationProgress(0);
+            mRotationBar.reset();
         }
     };
 
@@ -256,7 +269,6 @@ public class ImageCropActivity extends Activity {
             output.write(buffer, 0, bytesRead);
         }
     }
-
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent result) {
