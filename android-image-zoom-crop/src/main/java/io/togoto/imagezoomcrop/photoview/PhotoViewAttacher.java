@@ -1144,7 +1144,7 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
         }
 
         private float interpolate() {
-            float t = 1f * (System.currentTimeMillis() - mStartTime) / ZOOM_DURATION;
+            float t = 1f * (System.currentTimeMillis() - mStartTime) / DEFAULT_ROTATE_DURATION;
             t = Math.min(1f, t);
             t = sInterpolator.getInterpolation(t);
             return t;

@@ -15,13 +15,13 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.NonNull;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.SeekBar;
 import android.widget.Toast;
 
 import java.io.Closeable;
@@ -36,6 +36,7 @@ import io.togoto.imagezoomcrop.cropoverlay.CropOverlayView;
 import io.togoto.imagezoomcrop.cropoverlay.edge.Edge;
 import io.togoto.imagezoomcrop.photoview.IGetImageBounds;
 import io.togoto.imagezoomcrop.photoview.PhotoView;
+import io.togoto.imagezoomcrop.photoview.RotationSeekBar;
 
 /**
  * @author GT
@@ -49,7 +50,7 @@ public class ImageCropActivity extends Activity {
     Button btnFromGallery;
     Button btnDone;
     View mMoveResizeText;
-    SeekBar mRotationBar;
+    RotationSeekBar mRotationBar;
     Button mBtnUndoRotation;
 
     private ContentResolver mContentResolver;
@@ -83,7 +84,7 @@ public class ImageCropActivity extends Activity {
         btnFromGallery = (Button) findViewById(R.id.btnFromGallery);
         btnDone = (Button) findViewById(R.id.btn_done);
         mMoveResizeText = findViewById(R.id.tv_move_resize_txt);
-        mRotationBar = (SeekBar) findViewById(R.id.bar_rotation);
+        mRotationBar = (RotationSeekBar) findViewById(R.id.bar_rotation);
         mBtnUndoRotation = (Button) findViewById(R.id.btn_undo);
 
         btnRetakePic.setOnClickListener(btnRetakeListener);
@@ -136,29 +137,12 @@ public class ImageCropActivity extends Activity {
         mImageView.setScale(minScale);
 
         // initialize rotation seek bar
-        mRotationBar.setMax(3600);
-        mRotationBar.setProgress(1800);
-        mRotationBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
-
-            private int mPreviousProgress = 1800;
-
+        mRotationBar.setOnSeekBarChangeListener(new RotationSeekBar.OnRotationSeekBarChangeListener(mRotationBar) {
             @Override
-            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+            public void onRotationProgressChanged(@NonNull RotationSeekBar seekBar, float delta, boolean fromUser) {
                 if (fromUser) {
-                    int delta = progress - mPreviousProgress;
-                    mImageView.setRotationBy((float) delta / 10, false);
+                    mImageView.setRotationBy(delta, false);
                 }
-                mPreviousProgress = progress;
-            }
-
-            @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {
-
-            }
-
-            @Override
-            public void onStopTrackingTouch(SeekBar seekBar) {
-
             }
         });
 
@@ -203,7 +187,7 @@ public class ImageCropActivity extends Activity {
         @Override
         public void onClick(View v) {
             mImageView.setRotationBy(0, true);
-            mRotationBar.setProgress(1800);
+            mRotationBar.setRotationProgress(0);
         }
     };
 

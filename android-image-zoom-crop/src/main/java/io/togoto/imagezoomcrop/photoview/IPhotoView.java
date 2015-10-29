@@ -28,6 +28,7 @@ public interface IPhotoView {
     public static final float DEFAULT_MID_SCALE = 1.75f;
     public static final float DEFAULT_MIN_SCALE = 1.0f;
     public static final int DEFAULT_ZOOM_DURATION = 200;
+    public static final int DEFAULT_ROTATE_DURATION = 250;
 
     /**
      * Returns true if the PhotoView is set to allow zooming of Photos.

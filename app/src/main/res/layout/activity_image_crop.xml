@@ -65,7 +65,7 @@
             android:paddingBottom="10dp"
             android:gravity="center"
             android:orientation="horizontal">
-            <SeekBar
+            <io.togoto.imagezoomcrop.photoview.RotationSeekBar
                 android:id="@+id/bar_rotation"
                 android:layout_weight="1.0"
                 android:layout_width="0dp"
