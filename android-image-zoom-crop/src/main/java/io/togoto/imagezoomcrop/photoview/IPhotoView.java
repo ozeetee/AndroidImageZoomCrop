@@ -360,4 +360,5 @@ public interface IPhotoView {
      */
     void reset();
 
+    void setImageBoundsListener(IGetImageBounds listener);
 }

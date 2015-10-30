@@ -6,10 +6,10 @@
  * <p/>
  * http://www.apache.org/licenses/LICENSE-2.0
  * <p/>
- * Unless required by applicable law or agreed to in writing, software distributed under the License
- * is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express
- * or implied. See the License for the specific language governing permissions and limitations under
- * the License.
+ * Unless required by applicable law or agreed to in writing, software distributed under the
+ * License is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either
+ * express or implied. See the License for the specific language governing permissions and limitations
+ * under the License.
  *******************************************************************************/
 package io.togoto.imagezoomcrop.photoview;
 
@@ -199,8 +199,8 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
 
     /**
      * Clean-up the resources attached to this object. This needs to be called when the ImageView
-     * is no longer used. A good example is from {@link android.view.View#onDetachedFromWindow()} or
-     * from {@link android.app.Activity#onDestroy()}.
+     * is no longer used. A good example is from {@link android.view.View#onDetachedFromWindow()}
+     * or from {@link android.app.Activity#onDestroy()}.
      */
     @SuppressWarnings("deprecation")
     public void cleanup() {
@@ -284,6 +284,10 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
 
     @Override
     public void setRotationBy(float degrees, boolean animate) {
+        ImageView imageView = getImageView();
+        if (imageView == null) {
+            return;
+        }
         final Rect imageBounds = getImageBounds();
         final int centerX = imageBounds.centerX();
         final int centerY = imageBounds.centerY();
@@ -297,7 +301,7 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
         }
 
         if (animate) {
-            getImageView().post(new AnimatedRotateRunnable(oldRotation, degreesNorm, centerX, centerY));
+            imageView.post(new AnimatedRotateRunnable(oldRotation, degreesNorm, centerX, centerY));
         } else {
             mSuppMatrix.postRotate(degreesNorm, centerX, centerY);
             checkAndDisplayMatrix();
@@ -617,8 +621,7 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
     }
 
     @Override
-    public void setScale(float scale, float focalX, float focalY,
-                         boolean animate) {
+    public void setScale(float scale, float focalX, float focalY, boolean animate) {
         ImageView imageView = getImageView();
 
         if (null != imageView) {
@@ -720,17 +723,18 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
         }
     }
 
-    IGetImageBounds boundsListener;
+    IGetImageBounds mBoundsListener;
 
-    public void addListener(IGetImageBounds listener) {
-        this.boundsListener = listener;
+    @Override
+    public void setImageBoundsListener(IGetImageBounds listener) {
+        mBoundsListener = listener;
     }
 
     public Rect getImageBounds() {
         if (getImageView() == null) {
             return new Rect();
-        } else if (boundsListener != null) {
-            return boundsListener.getImageBounds();
+        } else if (mBoundsListener != null) {
+            return mBoundsListener.getImageBounds();
         } else {
             return new Rect(getImageViewWidth(getImageView()), 0, 0, getImageViewHeight(getImageView()));
         }
@@ -761,8 +765,8 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
 
         float deltaX = 0, deltaY = 0;
 
-        Rect overalyImageBounds = getImageBounds();
-        final int overlayViewHeight = overalyImageBounds.height();
+        Rect overlayImageBounds = getImageBounds();
+        final int overlayViewHeight = overlayImageBounds.height();
 
         final int viewHeight = getImageViewHeight(imageView);
 
@@ -779,14 +783,14 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
                     deltaY = 0;//(overlayViewHeight - height) / 2 ;//- rect.top;
                     break;
             }
-        } else if (rect.top > overalyImageBounds.top) {
-            deltaY = -(rect.top - overalyImageBounds.top);
-        } else if (rect.bottom < overalyImageBounds.bottom) {
+        } else if (rect.top > overlayImageBounds.top) {
+            deltaY = -(rect.top - overlayImageBounds.top);
+        } else if (rect.bottom < overlayImageBounds.bottom) {
             //TODO: Need to do something to be accurate...
-            deltaY = (overalyImageBounds.bottom - rect.bottom);
+            deltaY = (overlayImageBounds.bottom - rect.bottom);
         }
 
-        final int overlayViewWidth = overalyImageBounds.width();
+        final int overlayViewWidth = overlayImageBounds.width();
         if (width <= overlayViewWidth) {
             switch (mScaleType) {
                 case FIT_START:
@@ -800,11 +804,11 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
                     break;
             }
             mScrollEdge = EDGE_BOTH;
-        } else if (rect.left > overalyImageBounds.left) {
+        } else if (rect.left > overlayImageBounds.left) {
             mScrollEdge = EDGE_LEFT;
-            deltaX = -(rect.left - overalyImageBounds.left); // -rect.left;
-        } else if (rect.right < overalyImageBounds.right) {
-            deltaX = (overalyImageBounds.right - rect.right);
+            deltaX = -(rect.left - overlayImageBounds.left); // -rect.left;
+        } else if (rect.right < overlayImageBounds.right) {
+            deltaX = (overlayImageBounds.right - rect.right);
             mScrollEdge = EDGE_RIGHT;
         } else {
             mScrollEdge = EDGE_NONE;
@@ -835,6 +839,7 @@ class PhotoViewAttacher implements IPhotoView, View.OnTouchListener,
         return null;
     }
 
+    @Override
     public Bitmap getVisibleRectangleBitmap() {
         ImageView imageView = getImageView();
         if (imageView == null) {

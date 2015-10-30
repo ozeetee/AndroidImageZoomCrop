@@ -96,7 +96,7 @@ public class ImageCropActivity extends Activity {
         mBtnReset.setOnClickListener(btnResetListerner);
         mBtnUndoRotation.setOnClickListener(btnUndoRotationListener);
 
-        mImageView.addImageBoundsListener(new IGetImageBounds() {
+        mImageView.setImageBoundsListener(new IGetImageBounds() {
             @Override
             public Rect getImageBounds() {
                 return mCropOverlayView.getImageBounds();

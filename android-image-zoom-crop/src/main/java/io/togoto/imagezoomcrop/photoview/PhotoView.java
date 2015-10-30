@@ -313,8 +313,9 @@ public class PhotoView extends ImageView implements IPhotoView {
         super.onDetachedFromWindow();
     }
 
-    public void addImageBoundsListener(IGetImageBounds listener) {
-        mAttacher.addListener(listener);
+    @Override
+    public void setImageBoundsListener(IGetImageBounds listener) {
+        mAttacher.setImageBoundsListener(listener);
     }
 
 }
