@@ -3,6 +3,7 @@ package io.togoto.imagezoomcrop.cropoverlay;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
+import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Path;
 import android.graphics.Rect;
@@ -33,7 +34,7 @@ public class CropOverlayView extends View implements IGetImageBounds {
     // we are cropping square image so width and height will always be equal
     private int DEFAULT_CROPWIDTH = 600;
     private static final int DEFAULT_CORNER_RADIUS = 6;
-
+    private static final int DEFAULT_OVERLAY_COLOR = Color.argb(204, 41, 48, 63);
 
     // The Paint used to darken the surrounding areas outside the crop area.
     private Paint mBackgroundPaint;
@@ -59,6 +60,7 @@ public class CropOverlayView extends View implements IGetImageBounds {
     private int mMinWidth;
     private int mMaxWidth;
     private int mCornerRadius;
+    private int mOverlayColor;
     private Context mContext;
 
     public CropOverlayView(Context context) {
@@ -80,6 +82,7 @@ public class CropOverlayView extends View implements IGetImageBounds {
             final float defaultRadius = TypedValue.applyDimension(
                     TypedValue.COMPLEX_UNIT_DIP, DEFAULT_CORNER_RADIUS, mContext.getResources().getDisplayMetrics());
             mCornerRadius = ta.getDimensionPixelSize(R.styleable.CropOverlayView_cornerRadius, (int) defaultRadius);
+            mOverlayColor = ta.getColor(R.styleable.CropOverlayView_overlayColor, DEFAULT_OVERLAY_COLOR);
         } finally {
             ta.recycle();
         }
@@ -103,7 +106,7 @@ public class CropOverlayView extends View implements IGetImageBounds {
 
         mClipPath.addRoundRect(mBitmapRect, mCornerRadius, mCornerRadius, Path.Direction.CW);
         canvas.clipPath(mClipPath, Region.Op.DIFFERENCE);
-        canvas.drawARGB(204, 41, 48, 63);
+        canvas.drawColor(mOverlayColor);
         mClipPath.reset();
         canvas.restore();
         canvas.drawRoundRect(mBitmapRect, mCornerRadius, mCornerRadius, mBorderPaint);
