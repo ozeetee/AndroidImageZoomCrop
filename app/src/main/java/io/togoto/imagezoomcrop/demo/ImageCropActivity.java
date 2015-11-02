@@ -44,6 +44,7 @@ import io.togoto.imagezoomcrop.photoview.RotationSeekBar;
 public class ImageCropActivity extends Activity {
 
     public static final String TAG = "ImageCropActivity";
+    private static final int ANCHOR_CENTER_DELTA = 10;
 
     PhotoView mImageView;
     CropOverlayView mCropOverlayView;
@@ -106,9 +107,14 @@ public class ImageCropActivity extends Activity {
         // initialize rotation seek bar
         mRotationBar.setOnSeekBarChangeListener(new RotationSeekBar.OnRotationSeekBarChangeListener(mRotationBar) {
             @Override
-            public void onRotationProgressChanged(@NonNull RotationSeekBar seekBar, float delta, boolean fromUser) {
+            public void onRotationProgressChanged(@NonNull RotationSeekBar seekBar, float angle, float delta, boolean fromUser) {
                 if (fromUser) {
-                    mImageView.setRotationBy(delta, false);
+                    if (Math.abs(angle) < ANCHOR_CENTER_DELTA) {
+                        mRotationBar.reset();
+                        mImageView.setRotationBy(0, true);
+                    } else {
+                        mImageView.setRotationBy(delta, false);
+                    }
                 }
             }
         });

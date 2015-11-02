@@ -66,7 +66,7 @@ public class RotationSeekBar extends SeekBar {
     }
 
     private static float fromProgressToDegrees(int progress) {
-        return (progress / 10f) - DEFAULT_PROGRESS;
+        return (progress - DEFAULT_PROGRESS) / 10f;
     }
 
     private static int fromDegreesToProgress(float degrees) {
@@ -83,8 +83,9 @@ public class RotationSeekBar extends SeekBar {
 
         @Override
         public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
-            float delta = (progress - mPreviousProgress) / 10f;
-            onRotationProgressChanged((RotationSeekBar) seekBar, delta, fromUser);
+            final float angle = fromProgressToDegrees(progress);
+            final float delta = (progress - mPreviousProgress) / 10f;
+            onRotationProgressChanged((RotationSeekBar) seekBar, angle, delta, fromUser);
             mPreviousProgress = progress;
         }
 
@@ -92,11 +93,12 @@ public class RotationSeekBar extends SeekBar {
          * Notification that the rotation progress level has changed.
          *
          * @param seekBar  The SeekBar whose progress has changed
+         * @param angle    The current SeekBar angle
          * @param delta    The difference in degrees from the previous call
          * @param fromUser True if the progress change was initiated by the user
          */
         public abstract void onRotationProgressChanged(
-                @NonNull RotationSeekBar seekBar, float delta, boolean fromUser);
+                @NonNull RotationSeekBar seekBar, float angle, float delta, boolean fromUser);
 
         @Override
         public void onStartTrackingTouch(SeekBar seekBar) {
