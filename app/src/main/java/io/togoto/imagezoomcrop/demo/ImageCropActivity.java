@@ -22,6 +22,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.SeekBar;
 import android.widget.Toast;
 
 import java.io.Closeable;
@@ -106,15 +107,23 @@ public class ImageCropActivity extends Activity {
 
         // initialize rotation seek bar
         mRotationBar.setOnSeekBarChangeListener(new RotationSeekBar.OnRotationSeekBarChangeListener(mRotationBar) {
+
+            private float mLastAngle;
+
             @Override
             public void onRotationProgressChanged(@NonNull RotationSeekBar seekBar, float angle, float delta, boolean fromUser) {
+                mLastAngle = angle;
                 if (fromUser) {
-                    if (Math.abs(angle) < ANCHOR_CENTER_DELTA) {
-                        mRotationBar.reset();
-                        mImageView.setRotationBy(0, true);
-                    } else {
-                        mImageView.setRotationBy(delta, false);
-                    }
+                    mImageView.setRotationBy(delta, false);
+                }
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                super.onStopTrackingTouch(seekBar);
+                if (Math.abs(mLastAngle) < ANCHOR_CENTER_DELTA) {
+                    mRotationBar.reset();
+                    mImageView.setRotationBy(0, true);
                 }
             }
         });

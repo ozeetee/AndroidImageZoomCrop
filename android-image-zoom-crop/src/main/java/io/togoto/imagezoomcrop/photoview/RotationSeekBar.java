@@ -24,6 +24,8 @@ public class RotationSeekBar extends SeekBar {
     private static final int DEFAULT_MAX = 3600;
     private static final int DEFAULT_PROGRESS = 1800;
 
+    private OnRotationSeekBarChangeListener mRotationListener;
+
     public RotationSeekBar(Context context) {
         super(context);
         init();
@@ -50,11 +52,24 @@ public class RotationSeekBar extends SeekBar {
         setProgress(DEFAULT_PROGRESS);
     }
 
+    @Override
+    public void setOnSeekBarChangeListener(OnSeekBarChangeListener l) {
+        if (l != null && !(l instanceof OnRotationSeekBarChangeListener)) {
+            throw new IllegalArgumentException("Use OnRotationSeekBarChangeListener");
+        }
+        mRotationListener = (OnRotationSeekBarChangeListener) l;
+        super.setOnSeekBarChangeListener(l);
+    }
+
     public void setRotationProgress(float rotation) {
         if (rotation < -180f || rotation > 180f) {
             throw new IllegalArgumentException("Invalid rotation value");
         }
-        setProgress(fromDegreesToProgress(rotation));
+        if (rotation == 0f) {
+            reset();
+        } else {
+            setProgress(fromDegreesToProgress(rotation));
+        }
     }
 
     public float getRotationProgress() {
@@ -63,6 +78,7 @@ public class RotationSeekBar extends SeekBar {
 
     public void reset() {
         init();
+        mRotationListener.resetPreviousProgress();
     }
 
     private static float fromProgressToDegrees(int progress) {
@@ -87,6 +103,10 @@ public class RotationSeekBar extends SeekBar {
             final float delta = (progress - mPreviousProgress) / 10f;
             onRotationProgressChanged((RotationSeekBar) seekBar, angle, delta, fromUser);
             mPreviousProgress = progress;
+        }
+
+        void resetPreviousProgress() {
+            mPreviousProgress = DEFAULT_PROGRESS;
         }
 
         /**
